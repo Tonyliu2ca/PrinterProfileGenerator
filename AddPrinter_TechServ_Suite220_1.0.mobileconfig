@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadDisplayName</key>
+			<string>Printing</string>
+			<key>PayloadEnabled</key>
+			<true/>
+			<key>PayloadIdentifier</key>
+			<string>com.github.wardsparadox.adbefe3d-f7df-4908-afa2-0ffcd4760b61</string>
+			<key>PayloadType</key>
+			<string>com.apple.mcxprinting</string>
+			<key>PayloadUUID</key>
+			<string>adbefe3d-f7df-4908-afa2-0ffcd4760b61</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>UserPrinterList</key>
+			<dict>
+				<key>TechServ_Suite220</key>
+				<dict>
+					<key>DeviceURI</key>
+					<string>socket://10.115.100.44</string>
+					<key>DisplayName</key>
+					<string>TechServ_Suite220</string>
+					<key>Location</key>
+					<string>TechServ_Suite220</string>
+					<key>Model</key>
+					<string>HP LaserJet 5500</string>
+					<key>PPDURL</key>
+					<string>file://localhost//Library/Printers/PPDs/Contents/Resources/HP LaserJet 5500.ppd</string>
+					<key>PrinterLocked</key>
+					<false/>
+				</dict>
+			</dict>
+		</dict>
+	</array>
+	<key>PayloadDisplayName</key>
+	<string>TechServ_Suite220 Printer Profile 1.0</string>
+	<key>PayloadIdentifier</key>
+	<string>com.github.wardsparadox.f6764048-712f-4a67-a9f7-59babe8f187b</string>
+	<key>PayloadOrganization</key>
+	<string>GitHub</string>
+	<key>PayloadRemovalDisallowed</key>
+	<false/>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>f6764048-712f-4a67-a9f7-59babe8f187b</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>
