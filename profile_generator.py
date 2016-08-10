@@ -72,11 +72,11 @@ else:
 if args.driver.startswith('/Library'):
     # Assume the user passed in a full path rather than a relative filename
     driver = args.driver
-    model = driver.rsplit('/', 1)[1].split('.', 1)
+    model = driver.rsplit('/', 1)[1].split('.', 1)[0]
 else:
     # Assume only a relative filename
     driver = os.path.join('/Library/Printers/PPDs/Contents/Resources', args.driver)
-    model = args.driver.split('.',1)
+    model = args.driver.split('.',1)[0]
 
 if '://' in args.address:
     # Assume the user passed in a full address and protocol
