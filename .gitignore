@@ -1,1 +1,3 @@
 *.pkginfo
+AddPrinter_*
+Template_Profile_Backup.mobileconfig 

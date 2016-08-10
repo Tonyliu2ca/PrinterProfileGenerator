@@ -80,7 +80,7 @@ template = open(os.path.relpath("Template_Profile.mobileconfig"))
 
 uuid1 = str(uuid4())
 uuid2 = str(uuid4())
-model = driver.rsplit('/', 1)[1][:-4]
+model = driver.rsplit('/', 1)[1].fsplit('.',1)
 
 
 replacements = {"$UUID1$": uuid1, "$UUID2$": uuid2, "$PRINTERNAME$": args.printername, "$DISPLAYNAME$": displayName, "$LOCATION$":location, "$VERSION$":version, "$PPD$":driver,"$URI$":address, "$MODEL$": model}
