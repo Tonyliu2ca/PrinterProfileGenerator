@@ -1,3 +1,4 @@
 *.pkginfo
-AddPrinter_*
-Template_Profile_Backup.mobileconfig 
+*.mobileconfig
+*.plist
+plistlibtest.py
