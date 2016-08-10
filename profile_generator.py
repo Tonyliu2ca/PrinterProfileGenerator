@@ -76,7 +76,7 @@ if args.driver.startswith('/Library'):
 else:
     # Assume only a relative filename
     driver = os.path.join('/Library/Printers/PPDs/Contents/Resources', args.driver)
-    model = args.driver.split('.',1)[0]
+    model = args.driver.split('.', 1)[0]
 
 if '://' in args.address:
     # Assume the user passed in a full address and protocol
@@ -127,16 +127,4 @@ _profile["PayloadContent"] = [_payload]
 # Complete Profile
 Profile = _profile
 
-#replacements = {"$UUID1$": uuid1, "$UUID2$": uuid2, "$PRINTERNAME$": args.printername, "$DISPLAYNAME$": displayName, "$LOCATION$":location, "$VERSION$":version, "$PPD$":driver,"$URI$":address, "$MODEL$": model}
-#print model
-#with open("Template_Profile.mobileconfig") as template, open("AddPrinter_" + args.printername + "_" + version + '.mobileconfig', 'w') as profile:
-#tempprofile = template.read()
-#newprofile = replace_words(tempprofile, replacements)
-
-
-#profile = open("AddPrinter_" + args.printername + "_" + version + '.mobileconfig', 'w')
-#profile.write(newprofile)
-#profile.close()
-#template.close()
-#print len(replacements)
 writePlist(Profile, "AddPrinter_{0}_{1}.mobileconfig".format(args.printername, version))
