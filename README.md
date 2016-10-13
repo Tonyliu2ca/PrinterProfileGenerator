@@ -38,4 +38,5 @@ optional arguments:
 
   --version VERSION     Version number of Munki pkginfo. Optional. Defaults to
                         1.0.
+  --option key=value [--option key2=value2 ...] Adds options for printer
 ```
