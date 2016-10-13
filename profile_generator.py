@@ -4,50 +4,32 @@ Generates Printer Profile
 '''
 # Libraries
 import os
-import sys
 import argparse
-import re
 from plistlib import writePlist
 from uuid import uuid4
-
 
 # Variables
 profileuuid = str(uuid4())
 payloaduuid = str(uuid4())
+_options = {}
+
 
 # Parser Options
 parser = argparse.ArgumentParser(description='Generate a Configuration Profile for printer installation.')
-parser.add_argument('--printername', help='Name of printer queue. May not contain spaces, tabs, # or /. Required.')
-parser.add_argument('--driver', help='Name of driver file in /Library/Printers/PPDs/Contents/Resources/. Can be relative or full path. Required.')
-parser.add_argument('--address', help='IP or DNS address of printer. If no protocol is specified, defaults to socket://. Required.')
+parser.add_argument('--printername', help='Name of printer queue. May not contain spaces, tabs, # or /. Required.', required=True)
+parser.add_argument('--driver', help='Name of driver file in /Library/Printers/PPDs/Contents/Resources/. Can be relative or full path. Required.',required=True)
+parser.add_argument('--address', help='IP or DNS address of printer. If no protocol is specified, defaults to socket://. Required.',required=True)
 parser.add_argument('--location', help='Location name for printer. Optional. Defaults to printername.')
 parser.add_argument('--displayname', help='Display name for printer (and Munki pkginfo). Optional. Defaults to printername.')
 parser.add_argument('--version', help='Version number of Munki pkginfo. Optional. Defaults to 1.0.', default='1.0')
 parser.add_argument('--organization', help='Change Organization of Profile. Defaults to GitHub', default="GitHub")
 parser.add_argument('--identifier', help='Change Profile + Payload Identifier before uuid. Payload UUID is appended to ensure it is unique. Defaults to com.github.wardsparadox', default="com.github.wardsparadox")
+parser.add_argument('--option', help='Add an option in addition to the "printer is shared" option. Bool values must be in True or False form.',action='append')
 # Removed CSV for now.
 #parser.add_argument('--csv', help='Path to CSV file containing printer info. If CSV is provided, all other options are ignored.')
 
 # Main
-
 args = parser.parse_args()
-if not args.printername:
-    print >> sys.stderr, (os.path.basename(sys.argv[0]) + ': error: argument --printername is required')
-    parser.print_usage()
-    sys.exit(1)
-if not args.driver:
-    print >> sys.stderr, (os.path.basename(sys.argv[0]) + ': error: argument --driver is required')
-    parser.print_usage()
-    sys.exit(1)
-if not args.address:
-    print >> sys.stderr, (os.path.basename(sys.argv[0]) + ': error: argument --address is required')
-    parser.print_usage()
-    sys.exit(1)
-
-if re.search(r"[\s#/]", args.printername):
-    # printernames can't contain spaces, tabs, # or /.  See lpadmin manpage for details.
-    print >> sys.stderr, ("ERROR: Printernames can't contain spaces, tabs, # or /.")
-    sys.exit(1)
 
 if args.displayname:
     displayName = args.displayname
@@ -63,11 +45,6 @@ if args.version:
     version = str(args.version)
 else:
     version = "1.0"
-
-#if args.options:
-#    optionsString = getOptionsString(args.options[0])
-#else:
-#    optionsString = ''
 
 if args.driver.startswith('/Library'):
     # Assume the user passed in a full path rather than a relative filename
@@ -85,10 +62,18 @@ else:
     # Assume the user wants to use the default, socket://
     address = 'socket://' + args.address
 
-if args.identifier:
-    profileidentifier = args.identifier
-else:
+if "wardsparadox" in args.identifier:
     profileidentifier = "com.github.wardsparadox.{0}".format(profileuuid)
+    payloadidentifier = "com.github.wardsparadox.{0}".format(payloaduuid)
+else:
+    profileidentifier = args.identifier
+    payloadidentifier = "{0}.{1}".format(args.identifier, payloaduuid)
+
+for option in args.option:
+    item = option.split('=')
+    _options[item[0]]=item[1]
+
+_options["printer-is-shared"] = False
 
 # Actual Printer Info
 Printer = {}
@@ -99,6 +84,7 @@ _printer["Location"] = location
 _printer["Model"] = model
 _printer["PPDURL"] = driver
 _printer["PrinterLocked"] = False
+_printer["Option"] = _options
 Printer[args.printername] = _printer
 
 
@@ -106,7 +92,7 @@ Printer[args.printername] = _printer
 _payload = {}
 _payload["PayloadDisplayName"] = "Printing"
 _payload["PayloadEnabled"] = True
-_payload["PayloadIdentifier"] = "com.github.wardsparadox.{0}".format(payloaduuid)
+_payload["PayloadIdentifier"] = payloadidentifier
 _payload["PayloadType"] = "com.apple.mcxprinting"
 _payload["PayloadUUID"] = payloaduuid
 _payload["PayloadVersion"] = 1
