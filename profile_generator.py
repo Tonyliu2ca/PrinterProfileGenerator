@@ -101,7 +101,7 @@ else:
         for line in ppd:
             if "*NickName: " in line:
                 model = line.split("\"")[1]
-            ppd.close()
+    ppd.close()        
 
 if '://' in args.address:
     # Assume the user passed in a full address and protocol
