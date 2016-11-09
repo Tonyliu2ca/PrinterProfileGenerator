@@ -22,12 +22,14 @@ parser.add_argument(
     help='Name of printer queue. May not contain spaces, tabs,'
     '# or /. Required.',
     required=True)
-parser.add_argument(
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument(
     '--driver',
     help='Name of driver file in'
     '/Library/Printers/PPDs/Contents/Resources/.'
-    'Can be relative or full path. Required.',
-    required=True)
+    'Can be relative or full path. Required OR use --generic.')
+group.add_argument('--generic', help='Use the Generic'
+                                     'Postscript Printer driver. Required OR use --driver /PATH/TO/Driver .', action='store_true')
 parser.add_argument(
     '--address',
     help='IP or DNS address of printer.'
@@ -85,23 +87,31 @@ if args.version:
 else:
     version = "1.0"
 
-if args.driver.startswith('/Library'):
-    # Assume the user passed in a full path rather than a relative filename
-    driver = args.driver
-    with gzip.open(driver, 'rb') as ppd:
+if args.generic:
+    driver = "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Resources/Generic.ppd"
+    with open(driver, 'rb') as ppd:
         for line in ppd:
             if "*NickName: " in line:
                 model = line.split("\"")[1]
         ppd.close()
-else:
-    # Assume only a relative filename
-    driver = os.path.join('/Library/Printers/PPDs/Contents/Resources',
-                          args.driver)
-    with gzip.open(driver, 'rb') as ppd:
-        for line in ppd:
-            if "*NickName: " in line:
-                model = line.split("\"")[1]
-    ppd.close()        
+if args.driver:
+    if args.driver.startswith('/Library'):
+        # Assume the user passed in a full path rather than a relative filename
+        driver = args.driver
+        with gzip.open(driver, 'rb') as ppd:
+            for line in ppd:
+                if "*NickName: " in line:
+                    model = line.split("\"")[1]
+            ppd.close()
+    else:
+        # Assume only a relative filename
+        driver = os.path.join('/Library/Printers/PPDs/Contents/Resources',
+                            args.driver)
+        with gzip.open(driver, 'rb') as ppd:
+            for line in ppd:
+                if "*NickName: " in line:
+                    model = line.split("\"")[1]
+            ppd.close()
 
 if '://' in args.address:
     # Assume the user passed in a full address and protocol
