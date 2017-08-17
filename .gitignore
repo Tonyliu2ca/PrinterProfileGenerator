@@ -3,3 +3,4 @@
 *.mobileconfig
 *.plist
 plistlibtest.py
+*_uninstallscript.py

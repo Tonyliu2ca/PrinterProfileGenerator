@@ -7,6 +7,7 @@ import os
 import argparse
 import gzip
 import subprocess
+import tempfile
 from plistlib import writePlist
 from uuid import uuid4
 
@@ -182,7 +183,7 @@ def main():
 
     # Complete Profile
     Profile = _profile
-    filename = "AddPrinter_{0}_{1}.mobileconfig".format(args.printername, version)
+    filename = "AddPrinter_{0}.mobileconfig".format(args.printername)
 
     writePlist(Profile, filename)
     if args.munkiimport:
@@ -201,11 +202,14 @@ for line in check_output(['/usr/bin/lpstat', '-a']).split(os.linesep)[:-1]:
     printer = check_output(['/usr/bin/lpoptions', '-p', queuename])
     if printertoremove in printer:
         print queuename, 'is printer needed to remove'
+    print call(['/usr/sbin/lpadmin', '-x', queuename])
 """.format(displayName)
         scriptfilename = args.printername+"_uninstallscript.py"
         with open(scriptfilename, "w") as scriptfile:
             scriptfile.write(script)
-        mi = subprocess.Popen([munkiimport, "--postuninstall_script={}".format(scriptfilename), filename], shell=False)
+        mi = subprocess.Popen([munkiimport, "--postuninstall_script={}".format(scriptfilename), \
+        filename], shell=False)
         mi.wait()
+        scriptfile.close()
 if __name__ == "__main__":
     main()
