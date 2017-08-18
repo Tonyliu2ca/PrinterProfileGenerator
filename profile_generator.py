@@ -7,11 +7,11 @@ import os
 import argparse
 import gzip
 import subprocess
-import tempfile
 from plistlib import writePlist
 from uuid import uuid4
 
-
+path = os.path.dirname(os.path.abspath(__file__))
+postinstall_script = os.path.join(path, "postinstall.py")
 def main():
     '''
         Main Function
@@ -84,16 +84,16 @@ def main():
 
     # Main
     args = parser.parse_args()
-
+    printername = str(args.printername).replace('-', '_')
     if args.displayname:
         displayName = args.displayname
     else:
-        displayName = str(args.printername)
+        displayName = str(printername)
 
     if args.location:
         location = args.location
     else:
-        location = args.printername
+        location = printername
 
     if args.version:
         version = str(args.version)
@@ -157,7 +157,7 @@ def main():
     _printer["PPDURL"] = driver
     _printer["PrinterLocked"] = False
     _printer["Option"] = _options
-    Printer[args.printername] = _printer
+    Printer[printername] = _printer
 
     # Payload Content
     _payload = {}
@@ -183,7 +183,7 @@ def main():
 
     # Complete Profile
     Profile = _profile
-    filename = "AddPrinter_{0}.mobileconfig".format(args.printername)
+    filename = "AddPrinter_{0}.mobileconfig".format(printername)
 
     writePlist(Profile, filename)
     if args.munkiimport:
@@ -204,12 +204,15 @@ for line in check_output(['/usr/bin/lpstat', '-a']).split(os.linesep)[:-1]:
         print queuename, 'is printer needed to remove'
     print call(['/usr/sbin/lpadmin', '-x', queuename])
 """.format(displayName)
-        scriptfilename = args.printername+"_uninstallscript.py"
+        scriptfilename = printername+"_uninstallscript.py"
         with open(scriptfilename, "w") as scriptfile:
             scriptfile.write(script)
-        mi = subprocess.Popen([munkiimport, "--postuninstall_script={}".format(scriptfilename), \
-        filename], shell=False)
+        mi_cmd = [munkiimport, "--postuninstall_script={}".format(scriptfilename), \
+        "--postinstall_script={}".format(postinstall_script), filename]
+        mi = subprocess.Popen(mi_cmd)
         mi.wait()
         scriptfile.close()
+        os.remove(scriptfile)
+
 if __name__ == "__main__":
     main()
