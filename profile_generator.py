@@ -104,8 +104,8 @@ def main():
         driver = "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Resources/Generic.ppd"
         with open(driver, 'rb') as ppd:
             for line in ppd:
-                if "*NickName: " in line:
-                    model = line.split("\"")[1]
+                if "*NickName:" in line:
+                    model = line.split('"')[1]
             ppd.close()
     if args.driver:
         if args.driver.startswith('/Library'):
@@ -113,8 +113,8 @@ def main():
             driver = args.driver
             with gzip.open(driver, 'rb') as ppd:
                 for line in ppd:
-                    if "*NickName: " in line:
-                        model = line.split("\"")[1]
+                    if "*NickName:" in line:
+                        model = line.split('"')[1]
                 ppd.close()
         else:
             # Assume only a relative filename
@@ -122,8 +122,8 @@ def main():
                                   args.driver)
             with gzip.open(driver, 'rb') as ppd:
                 for line in ppd:
-                    if "*NickName: " in line:
-                        model = line.split("\"")[1]
+                    if "*NickName:" in line:
+                        model = line.split('"')[1]
                 ppd.close()
 
     if '://' in args.address:
