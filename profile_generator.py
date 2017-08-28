@@ -154,7 +154,7 @@ def main():
     _printer["DisplayName"] = displayName
     _printer["Location"] = location
     _printer["Model"] = model
-    _printer["PPDURL"] = driver
+    _printer["PPDURL"] = "file://localhost{0}".format(driver)
     _printer["PrinterLocked"] = False
     _printer["Option"] = _options
     Printer[printername] = _printer
@@ -202,13 +202,15 @@ for line in check_output(['/usr/bin/lpstat', '-a']).split(os.linesep)[:-1]:
     printer = check_output(['/usr/bin/lpoptions', '-p', queuename])
     if printertoremove in printer:
         print queuename, 'is printer needed to remove'
-    print call(['/usr/sbin/lpadmin', '-x', queuename])
+        print call(['/usr/sbin/lpadmin', '-x', queuename])
 """.format(displayName)
         scriptfilename = printername+"_uninstallscript.py"
         with open(scriptfilename, "w") as scriptfile:
             scriptfile.write(script)
-        mi_cmd = [munkiimport, "--postuninstall_script={}".format(scriptfilename), \
-        "--postinstall_script={}".format(postinstall_script), filename]
+        mi_cmd = [munkiimport, \
+        "--postuninstall_script={}".format(scriptfilename), \
+        "--postinstall_script={}".format(postinstall_script),\
+                  filename]
         mi = subprocess.Popen(mi_cmd)
         mi.wait()
         scriptfile.close()
