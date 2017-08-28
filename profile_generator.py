@@ -194,7 +194,7 @@ def main():
         except Exception as e:
             raise "Munki Admin Tools Not Installed!"
         script = """#!/usr/bin/python
-from subprocess import check_output
+from subprocess import call
 import os
 printertoremove = '{0}'
 for line in check_output(['/usr/bin/lpstat', '-a']).split(os.linesep)[:-1]:
