@@ -12,14 +12,17 @@ from uuid import uuid4
 
 path = os.path.dirname(os.path.abspath(__file__))
 postinstall_script = os.path.join(path, "postinstall.py")
+
+profileuuid = str(uuid4())
+payloaduuid = str(uuid4())
+_options = {}
+cwd = os.getcwd()
+
 def main():
     '''
         Main Function
     '''
     # Variables
-    profileuuid = str(uuid4())
-    payloaduuid = str(uuid4())
-    _options = {}
 
     # Parser Options
     parser = argparse.ArgumentParser(
@@ -184,7 +187,7 @@ def main():
     # Complete Profile
     Profile = _profile
     filename = "AddPrinter_{0}.mobileconfig".format(printername)
-
+    scriptfilename = printername+"_uninstallscript.py"
     writePlist(Profile, filename)
     if args.munkiimport:
         munkiimport = "/usr/local/munki/munkiimport"
@@ -204,7 +207,6 @@ for line in check_output(['/usr/bin/lpstat', '-a']).split(os.linesep)[:-1]:
         print queuename, 'is printer needed to remove'
         print call(['/usr/sbin/lpadmin', '-x', queuename])
 """.format(displayName)
-        scriptfilename = printername+"_uninstallscript.py"
         with open(scriptfilename, "w") as scriptfile:
             scriptfile.write(script)
         mi_cmd = [munkiimport, \
@@ -214,7 +216,13 @@ for line in check_output(['/usr/bin/lpstat', '-a']).split(os.linesep)[:-1]:
         mi = subprocess.Popen(mi_cmd)
         mi.wait()
         scriptfile.close()
-        os.remove(scriptfile)
+    yesno = raw_input("Remove Copy of Profile (and Script if used --munkiimport)? [y/n]")
+    if yesno.startswith("y") or yesno.startswith("Y"):
+        print "Removing files..."
+        os.remove(os.path.join(cwd, scriptfilename))
+        os.remove(os.path.join(cwd, filename))
+    else:
+        print "You will find the files in: %s" % cwd
 
 if __name__ == "__main__":
     main()
